@@ -1,0 +1,129 @@
+<div class="admin-feedback-container">
+  <mat-card>
+    <mat-card-header class="card-header">
+      <mat-card-title>
+        <mat-icon>admin_panel_settings</mat-icon>
+        Feedback Management
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-tab-group>
+        <!-- Feedbacks Tab -->
+        <mat-tab label="All Feedbacks">
+          <div class="tab-content">
+            <div *ngIf="isLoadingFeedbacks" class="loading">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p>Loading feedbacks...</p>
+            </div>
+
+            <div *ngIf="!isLoadingFeedbacks && feedbacks.length === 0" class="empty-state">
+              <mat-icon class="empty-icon">inbox</mat-icon>
+              <p>No feedbacks found.</p>
+            </div>
+
+            <table mat-table [dataSource]="feedbacks" class="feedback-table" *ngIf="!isLoadingFeedbacks && feedbacks.length > 0">
+              <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef>ID</th>
+                <td mat-cell *matCellDef="let feedback">{{ feedback.id }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="orderId">
+                <th mat-header-cell *matHeaderCellDef>Order ID</th>
+                <td mat-cell *matCellDef="let feedback">{{ feedback.orderId }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="customerId">
+                <th mat-header-cell *matHeaderCellDef>Customer ID</th>
+                <td mat-cell *matCellDef="let feedback">{{ feedback.customerId }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="rating">
+                <th mat-header-cell *matHeaderCellDef>Rating</th>
+                <td mat-cell *matCellDef="let feedback">
+                  <div class="rating-display">
+                    <mat-icon *ngFor="let star of getStars(feedback.rating)" class="star-icon">
+                      {{ star }}
+                    </mat-icon>
+                    <span class="rating-value">{{ feedback.rating }}/5</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="comment">
+                <th mat-header-cell *matHeaderCellDef>Comment</th>
+                <td mat-cell *matCellDef="let feedback" class="comment-cell">
+                  {{ truncateComment(feedback.comment) }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef>Created At</th>
+                <td mat-cell *matCellDef="let feedback">{{ formatDate(feedback.createdAtUtc) }}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="feedbackColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: feedbackColumns;"></tr>
+            </table>
+          </div>
+        </mat-tab>
+
+        <!-- Worker Ratings Tab -->
+        <mat-tab label="Worker Average Ratings">
+          <div class="tab-content">
+            <div *ngIf="isLoadingRatings" class="loading">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p>Loading worker ratings...</p>
+            </div>
+
+            <div *ngIf="!isLoadingRatings && workerRatings.length === 0" class="empty-state">
+              <mat-icon class="empty-icon">people</mat-icon>
+              <p>No worker ratings found.</p>
+            </div>
+
+            <table mat-table [dataSource]="workerRatings" class="ratings-table" *ngIf="!isLoadingRatings && workerRatings.length > 0">
+              <ng-container matColumnDef="workerId">
+                <th mat-header-cell *matHeaderCellDef>Worker ID</th>
+                <td mat-cell *matCellDef="let rating">{{ rating.workerId }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="workerUsername">
+                <th mat-header-cell *matHeaderCellDef>Worker Name</th>
+                <td mat-cell *matCellDef="let rating">
+                  <div class="worker-info">
+                    <mat-icon>person</mat-icon>
+                    <span>{{ rating.workerUsername }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="averageRating">
+                <th mat-header-cell *matHeaderCellDef>Average Rating</th>
+                <td mat-cell *matCellDef="let rating">
+                  <div class="rating-display">
+                    <mat-icon *ngFor="let star of getStars(rating.averageRating)" class="star-icon">
+                      {{ star }}
+                    </mat-icon>
+                    <mat-chip [color]="getRatingColor(rating.averageRating)">
+                      {{ rating.averageRating.toFixed(2) }} / 5.00
+                    </mat-chip>
+                  </div>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="totalRatings">
+                <th mat-header-cell *matHeaderCellDef>Total Ratings</th>
+                <td mat-cell *matCellDef="let rating">
+                  <mat-chip>{{ rating.totalRatings }} {{ rating.totalRatings === 1 ? 'rating' : 'ratings' }}</mat-chip>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="ratingsColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: ratingsColumns;"></tr>
+            </table>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card-content>
+  </mat-card>
+</div>
+

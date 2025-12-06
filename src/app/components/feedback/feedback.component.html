@@ -1,0 +1,63 @@
+<div class="feedback-container">
+  <mat-card>
+    <mat-card-header class="card-header">
+      <mat-card-title>
+        <mat-icon>rate_review</mat-icon>
+        Leave Feedback
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p class="description">
+        View your completed orders and leave feedback with ratings for the service and workers.
+      </p>
+      
+      <div *ngIf="isLoading" class="loading">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Loading completed orders...</p>
+      </div>
+
+      <div *ngIf="!isLoading && completedOrders.length === 0" class="empty-state">
+        <mat-icon class="empty-icon">inbox</mat-icon>
+        <p>No completed orders found. Complete some orders first to leave feedback.</p>
+      </div>
+
+      <div *ngIf="!isLoading && completedOrders.length > 0" class="orders-grid">
+        <mat-card *ngFor="let order of completedOrders" class="order-card">
+          <mat-card-header>
+            <mat-card-title>Order #{{ order.id }}</mat-card-title>
+            <mat-card-subtitle>{{ order.description }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="order-info">
+              <div class="info-row">
+                <mat-icon>calendar_today</mat-icon>
+                <span><strong>Completed:</strong> {{ formatDate(order.endDateUtc) }}</span>
+              </div>
+              <div class="info-row" *ngIf="order.workers.length > 0">
+                <mat-icon>people</mat-icon>
+                <span><strong>Workers:</strong> {{ order.workers.length }}</span>
+              </div>
+              <div class="feedback-status">
+                <mat-chip *ngIf="order.hasFeedback" color="primary">
+                  <mat-icon>check_circle</mat-icon>
+                  Feedback Submitted
+                </mat-chip>
+              </div>
+            </div>
+          </mat-card-content>
+          <mat-card-actions>
+            <button 
+              mat-raised-button 
+              color="primary" 
+              (click)="openFeedbackDialog(order)"
+              [disabled]="order.hasFeedback">
+              <mat-icon>{{ order.hasFeedback ? 'check_circle' : 'rate_review' }}</mat-icon>
+              {{ order.hasFeedback ? 'Feedback Submitted' : 'Leave Feedback' }}
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+

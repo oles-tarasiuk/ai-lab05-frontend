@@ -1,0 +1,75 @@
+<h2 mat-dialog-title>
+  <mat-icon>rate_review</mat-icon>
+  Leave Feedback for Order #{{ data.order.id }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="feedbackForm" class="feedback-form">
+    <!-- Order Rating -->
+    <div class="rating-section">
+      <h3>Overall Order Rating</h3>
+      <p class="section-description">How satisfied were you with this order?</p>
+      <div class="stars-container">
+        <button
+          type="button"
+          *ngFor="let star of getStars(feedbackForm.get('orderRating')?.value || 0); let i = index"
+          mat-icon-button
+          (click)="setOrderRating(i + 1)"
+          class="star-button">
+          <mat-icon [class.star-filled]="i < (feedbackForm.get('orderRating')?.value || 0)">{{ star }}</mat-icon>
+        </button>
+        <span class="rating-value">{{ feedbackForm.get('orderRating')?.value || 0 }} / 5</span>
+      </div>
+    </div>
+
+    <!-- Worker Ratings -->
+    <div class="rating-section" *ngIf="data.order.workers.length > 0">
+      <h3>Worker Ratings</h3>
+      <p class="section-description">Rate each worker who worked on this order:</p>
+      <div class="worker-ratings">
+        <div *ngFor="let worker of data.order.workers" class="worker-rating-item">
+          <div class="worker-info">
+            <mat-icon>person</mat-icon>
+            <span class="worker-name">{{ worker.username }}</span>
+          </div>
+          <div class="stars-container">
+            <button
+              type="button"
+              *ngFor="let star of getStars(getWorkerRatingControl(worker.id)?.value || 0); let i = index"
+              mat-icon-button
+              (click)="setWorkerRating(worker.id, i + 1)"
+              class="star-button">
+              <mat-icon [class.star-filled]="i < (getWorkerRatingControl(worker.id)?.value || 0)">{{ star }}</mat-icon>
+            </button>
+            <span class="rating-value">{{ getWorkerRatingControl(worker.id)?.value || 0 }} / 5</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comment -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Comment (Optional)</mat-label>
+      <textarea
+        matInput
+        formControlName="comment"
+        rows="4"
+        placeholder="Share your experience..."></textarea>
+      <mat-icon matPrefix>comment</mat-icon>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="isLoading">Cancel</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onSubmit()"
+    [disabled]="feedbackForm.invalid || isLoading">
+    <mat-spinner *ngIf="isLoading" diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
+    <mat-icon *ngIf="!isLoading">send</mat-icon>
+    {{ isLoading ? 'Submitting...' : 'Submit Feedback' }}
+  </button>
+</mat-dialog-actions>
+

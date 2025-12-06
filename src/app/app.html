@@ -37,6 +37,26 @@
       <mat-icon>speed</mat-icon>
       <span>Comparison</span>
     </button>
+    <!-- Feedback tab: For Customers -->
+    <button 
+      mat-button 
+      routerLink="/feedback" 
+      routerLinkActive="active" 
+      class="nav-button"
+      *ngIf="authService.isCustomer()">
+      <mat-icon>rate_review</mat-icon>
+      <span>Feedback</span>
+    </button>
+    <!-- Admin Feedback tab: Only for Admins -->
+    <button 
+      mat-button 
+      routerLink="/admin/feedback" 
+      routerLinkActive="active" 
+      class="nav-button"
+      *ngIf="authService.isAdmin()">
+      <mat-icon>admin_panel_settings</mat-icon>
+      <span>Feedback Management</span>
+    </button>
     <span class="user-info" *ngIf="authService.username()">
       <mat-icon>person</mat-icon>
       <span>{{ authService.username() }} ({{ authService.userRole() }})</span>
