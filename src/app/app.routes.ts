@@ -27,6 +27,16 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'feedback',
+    loadComponent: () => import('./components/feedback/feedback-form.component').then(m => m.FeedbackFormComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'admin/feedback',
+    loadComponent: () => import('./components/feedback/feedback-admin.component').then(m => m.FeedbackAdminComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: '',
     redirectTo: '/orders',
     pathMatch: 'full'

@@ -8,34 +8,54 @@
       <span>Orders</span>
     </button>
     <!-- Operations tab: Only for Workers and Admins -->
-    <button 
-      mat-button 
-      routerLink="/operations" 
-      routerLinkActive="active" 
+    <button
+      mat-button
+      routerLink="/operations"
+      routerLinkActive="active"
       class="nav-button"
       *ngIf="authService.hasAnyRole('Worker', 'Admin')">
       <mat-icon>build</mat-icon>
       <span>Operations</span>
     </button>
     <!-- Warehouse tab: Only for Admins -->
-    <button 
-      mat-button 
-      routerLink="/details" 
-      routerLinkActive="active" 
+    <button
+      mat-button
+      routerLink="/details"
+      routerLinkActive="active"
       class="nav-button"
       *ngIf="authService.isAdmin()">
       <mat-icon>inventory_2</mat-icon>
       <span>Warehouse</span>
     </button>
     <!-- Comparison tab: Only for Admins -->
-    <button 
-      mat-button 
-      routerLink="/comparison" 
-      routerLinkActive="active" 
+    <button
+      mat-button
+      routerLink="/comparison"
+      routerLinkActive="active"
       class="nav-button"
       *ngIf="authService.isAdmin()">
       <mat-icon>speed</mat-icon>
       <span>Comparison</span>
+    </button>
+    <!-- Feedback tab: For Customers and Admins -->
+    <button
+      mat-button
+      routerLink="/feedback"
+      routerLinkActive="active"
+      class="nav-button"
+      *ngIf="authService.hasAnyRole('Customer', 'Admin')">
+      <mat-icon>rate_review</mat-icon>
+      <span>Feedback</span>
+    </button>
+    <!-- Admin Feedback tab: Only for Admins -->
+    <button
+      mat-button
+      routerLink="/admin/feedback"
+      routerLinkActive="active"
+      class="nav-button"
+      *ngIf="authService.isAdmin()">
+      <mat-icon>analytics</mat-icon>
+      <span>Admin Feedback</span>
     </button>
     <span class="user-info" *ngIf="authService.username()">
       <mat-icon>person</mat-icon>
@@ -46,7 +66,7 @@
       <span>Logout</span>
     </button>
   </mat-toolbar>
-  
+
   <main class="main-content">
     <router-outlet></router-outlet>
   </main>
