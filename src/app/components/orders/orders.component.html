@@ -1,0 +1,144 @@
+<div class="orders-container">
+  <mat-card>
+    <mat-card-header class="card-header">
+      <mat-card-title>Orders</mat-card-title>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="openCreateDialog()" 
+        class="create-button"
+        *ngIf="canCreateOrder()">
+        <mat-icon>add</mat-icon>
+        Create Order
+      </button>
+    </mat-card-header>
+    <mat-card-content>
+      <div *ngIf="isLoading" class="loading">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Loading orders...</p>
+      </div>
+      <table mat-table [dataSource]="orders" class="orders-table" *ngIf="!isLoading">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let order">{{ order.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <td mat-cell *matCellDef="let order">{{ order.description }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="customer">
+          <th mat-header-cell *matHeaderCellDef>Customer</th>
+          <td mat-cell *matCellDef="let order">{{ order.customer?.username || 'N/A' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="startDate">
+          <th mat-header-cell *matHeaderCellDef>Start Date</th>
+          <td mat-cell *matCellDef="let order">{{ order.startDateUtc | date:'short' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="endDate">
+          <th mat-header-cell *matHeaderCellDef>End Date</th>
+          <td mat-cell *matCellDef="let order">{{ order.endDateUtc | date:'short' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let order">
+            <mat-chip [color]="getStatusColor(order.status)">
+              {{ getStatusLabel(order.status) }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let order">
+            <button 
+              mat-icon-button 
+              color="primary" 
+              (click)="openUpdateStatusDialog(order)" 
+              title="Update Status"
+              *ngIf="canUpdateStatus()">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button 
+              mat-icon-button 
+              color="accent" 
+              (click)="toggleOperations(order.id)" 
+              title="View Operations"
+              *ngIf="authService.hasAnyRole('Customer', 'Worker', 'Admin')">
+              <mat-icon>{{ expandedOrderId === order.id ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      
+      <!-- Operations expansion panel for each order -->
+      <div *ngFor="let order of orders" class="operations-section">
+        <mat-expansion-panel 
+          *ngIf="expandedOrderId === order.id"
+          [expanded]="true"
+          class="operations-panel">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>build</mat-icon>
+              <span>Operations for Order #{{ order.id }}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          
+          <div *ngIf="isLoadingOperations(order.id)" class="loading-operations">
+            <mat-spinner diameter="30"></mat-spinner>
+            <span>Loading operations...</span>
+          </div>
+          
+          <div *ngIf="!isLoadingOperations(order.id)">
+            <div *ngIf="getOperations(order.id).length === 0" class="no-operations">
+              <mat-icon>info</mat-icon>
+              <p>No operations found for this order.</p>
+            </div>
+            <table mat-table [dataSource]="getOperations(order.id)" class="operations-table" *ngIf="getOperations(order.id).length > 0">
+              <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef>ID</th>
+                <td mat-cell *matCellDef="let operation">{{ operation.id }}</td>
+              </ng-container>
+              
+              <ng-container matColumnDef="description">
+                <th mat-header-cell *matHeaderCellDef>Description</th>
+                <td mat-cell *matCellDef="let operation">{{ operation.description }}</td>
+              </ng-container>
+              
+              <ng-container matColumnDef="employee">
+                <th mat-header-cell *matHeaderCellDef>Employee</th>
+                <td mat-cell *matCellDef="let operation">{{ operation.employee?.username || 'N/A' }}</td>
+              </ng-container>
+              
+              <ng-container matColumnDef="startDate">
+                <th mat-header-cell *matHeaderCellDef>Start Date</th>
+                <td mat-cell *matCellDef="let operation">{{ operation.startDateUtc | date:'short' }}</td>
+              </ng-container>
+              
+              <ng-container matColumnDef="timeSpent">
+                <th mat-header-cell *matHeaderCellDef>Time Spent (hours)</th>
+                <td mat-cell *matCellDef="let operation">{{ operation.timeSpent }}</td>
+              </ng-container>
+              
+              <tr mat-header-row *matHeaderRowDef="['id', 'description', 'employee', 'startDate', 'timeSpent']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['id', 'description', 'employee', 'startDate', 'timeSpent'];"></tr>
+            </table>
+          </div>
+        </mat-expansion-panel>
+      </div>
+      
+      <div *ngIf="!isLoading && orders.length === 0" class="no-data">
+        <mat-icon class="empty-icon">inbox</mat-icon>
+        <p>No orders found. <span *ngIf="canCreateOrder()">Create your first order!</span></p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+

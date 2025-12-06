@@ -1,0 +1,53 @@
+<div class="app-container">
+  <mat-toolbar color="primary" *ngIf="authService.isAuthenticated()">
+    <mat-icon class="toolbar-icon">dashboard</mat-icon>
+    <span class="toolbar-title">Microservices Management</span>
+    <span class="spacer"></span>
+    <button mat-button routerLink="/orders" routerLinkActive="active" class="nav-button">
+      <mat-icon>shopping_cart</mat-icon>
+      <span>Orders</span>
+    </button>
+    <!-- Operations tab: Only for Workers and Admins -->
+    <button 
+      mat-button 
+      routerLink="/operations" 
+      routerLinkActive="active" 
+      class="nav-button"
+      *ngIf="authService.hasAnyRole('Worker', 'Admin')">
+      <mat-icon>build</mat-icon>
+      <span>Operations</span>
+    </button>
+    <!-- Warehouse tab: Only for Admins -->
+    <button 
+      mat-button 
+      routerLink="/details" 
+      routerLinkActive="active" 
+      class="nav-button"
+      *ngIf="authService.isAdmin()">
+      <mat-icon>inventory_2</mat-icon>
+      <span>Warehouse</span>
+    </button>
+    <!-- Comparison tab: Only for Admins -->
+    <button 
+      mat-button 
+      routerLink="/comparison" 
+      routerLinkActive="active" 
+      class="nav-button"
+      *ngIf="authService.isAdmin()">
+      <mat-icon>speed</mat-icon>
+      <span>Comparison</span>
+    </button>
+    <span class="user-info" *ngIf="authService.username()">
+      <mat-icon>person</mat-icon>
+      <span>{{ authService.username() }} ({{ authService.userRole() }})</span>
+    </span>
+    <button mat-button (click)="logout()" class="nav-button">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  </mat-toolbar>
+  
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

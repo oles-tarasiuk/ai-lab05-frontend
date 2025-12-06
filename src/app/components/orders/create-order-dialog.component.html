@@ -1,0 +1,56 @@
+<h2 mat-dialog-title>Create New Order</h2>
+<mat-dialog-content>
+  <form [formGroup]="orderForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="3" required></textarea>
+      <mat-error *ngIf="orderForm.get('description')?.hasError('required')">
+        Description is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width" *ngIf="authService.isAdmin()">
+      <mat-label>Customer</mat-label>
+      <mat-select formControlName="customerId" required [disabled]="loadingUsers">
+        <mat-option *ngIf="loadingUsers" disabled>
+          <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
+          Loading users...
+        </mat-option>
+        <mat-option *ngFor="let user of users" [value]="user.id">
+          {{ user.username }} ({{ user.email }})
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="orderForm.get('customerId')?.hasError('required')">
+        Customer is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Start Date</mat-label>
+      <input matInput [matDatepicker]="startPicker" formControlName="startDateUtc" required>
+      <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+      <mat-datepicker #startPicker></mat-datepicker>
+      <mat-error *ngIf="orderForm.get('startDateUtc')?.hasError('required')">
+        Start date is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>End Date</mat-label>
+      <input matInput [matDatepicker]="endPicker" formControlName="endDateUtc" required>
+      <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+      <mat-datepicker #endPicker></mat-datepicker>
+      <mat-error *ngIf="orderForm.get('endDateUtc')?.hasError('required')">
+        End date is required
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="orderForm.invalid || isLoading">
+    <mat-spinner *ngIf="isLoading" diameter="20" class="inline-spinner"></mat-spinner>
+    <span *ngIf="!isLoading">Create</span>
+  </button>
+</mat-dialog-actions>
+

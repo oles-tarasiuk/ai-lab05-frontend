@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>Update Order Status</h2>
+<mat-dialog-content>
+  <p>Order ID: {{ data.order.id }}</p>
+  <p>Description: {{ data.order.description }}</p>
+  <form [formGroup]="statusForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status" required>
+        <mat-option *ngFor="let status of orderStatuses" [value]="status">
+          {{ status }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="statusForm.get('status')?.hasError('required')">
+        Status is required
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="statusForm.invalid">
+    Update
+  </button>
+</mat-dialog-actions>
+

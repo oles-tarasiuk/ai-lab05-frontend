@@ -1,0 +1,151 @@
+<div class="comparison-container">
+  <mat-card>
+    <mat-card-header class="card-header">
+      <mat-icon class="header-icon">speed</mat-icon>
+      <mat-card-title>REST API vs RabbitMQ Comparison</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="description">
+        <p>Compare the performance of REST API and RabbitMQ approaches for order completion processing.</p>
+        <p class="info-text">
+          <mat-icon>info</mat-icon>
+          This test measures delivery time for both communication methods.
+        </p>
+      </div>
+
+      <div class="input-section">
+        <mat-form-field appearance="outline">
+          <mat-label>Order ID</mat-label>
+          <input matInput type="number" [(ngModel)]="orderId" min="1">
+          <mat-icon matPrefix>tag</mat-icon>
+        </mat-form-field>
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="runComparison()" 
+          [disabled]="isLoading"
+          class="run-button">
+          <mat-icon>play_arrow</mat-icon>
+          Run Comparison
+        </button>
+      </div>
+
+      <div *ngIf="isLoading" class="loading">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Running comparison...</p>
+      </div>
+
+      <div *ngIf="comparisonResult && !isLoading" class="results">
+        <div class="summary-card">
+          <h3>
+            <mat-icon>assessment</mat-icon>
+            Summary
+          </h3>
+          <div class="summary-content">
+            <div class="faster-approach">
+              <mat-icon [class.faster]="true">flash_on</mat-icon>
+              <span><strong>Faster Approach:</strong> {{ getFasterApproach() }}</span>
+            </div>
+            <div class="time-diff">
+              <span>Total Time Difference: {{ getTimeDifference().toFixed(2) }}ms ({{ getTimeDifferencePercent().toFixed(1) }}%)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="results-grid">
+          <mat-card class="result-card rest-api">
+            <mat-card-header>
+              <mat-icon>http</mat-icon>
+              <mat-card-title>REST API</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="result-item">
+                <span class="label">Status:</span>
+                <span [class.success]="comparisonResult.results.restApi.success" 
+                      [class.error]="!comparisonResult.results.restApi.success">
+                  {{ comparisonResult.results.restApi.success ? 'Success' : 'Failed' }}
+                </span>
+              </div>
+              <div class="result-item">
+                <span class="label">Delivery Time:</span>
+                <span class="value">{{ comparisonResult.results.restApi.deliveryTime.toFixed(2) }}ms</span>
+              </div>
+              <div class="result-item note">
+                <mat-icon>info</mat-icon>
+                <span>{{ comparisonResult.results.restApi.note }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card class="result-card rabbitmq">
+            <mat-card-header>
+              <mat-icon>queue</mat-icon>
+              <mat-card-title>RabbitMQ</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="result-item">
+                <span class="label">Status:</span>
+                <span [class.success]="comparisonResult.results.rabbitMq.success" 
+                      [class.error]="!comparisonResult.results.rabbitMq.success">
+                  {{ comparisonResult.results.rabbitMq.success ? 'Success' : 'Failed' }}
+                </span>
+              </div>
+              <div class="result-item">
+                <span class="label">Delivery Time:</span>
+                <span class="value">{{ comparisonResult.results.rabbitMq.deliveryTime.toFixed(2) }}ms</span>
+              </div>
+              <div class="result-item note">
+                <mat-icon>info</mat-icon>
+                <span>{{ comparisonResult.results.rabbitMq.note }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <div class="comparison-details">
+          <h3>
+            <mat-icon>insights</mat-icon>
+            Detailed Comparison
+          </h3>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>REST API</th>
+                <th>RabbitMQ</th>
+                <th>Difference</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Delivery Time</td>
+                <td>{{ comparisonResult.results.restApi.deliveryTime.toFixed(2) }}ms</td>
+                <td>{{ comparisonResult.results.rabbitMq.deliveryTime.toFixed(2) }}ms</td>
+                <td [class.faster]="comparisonResult.results.restApi.deliveryTime < comparisonResult.results.rabbitMq.deliveryTime"
+                    [class.slower]="comparisonResult.results.restApi.deliveryTime > comparisonResult.results.rabbitMq.deliveryTime">
+                  {{ Math.abs(comparisonResult.results.restApi.deliveryTime - comparisonResult.results.rabbitMq.deliveryTime).toFixed(2) }}ms
+                </td>
+              </tr>
+              <tr>
+                <td>Status</td>
+                <td [class.success]="comparisonResult.results.restApi.success">
+                  {{ comparisonResult.results.restApi.success ? '✓ Success' : '✗ Failed' }}
+                </td>
+                <td [class.success]="comparisonResult.results.rabbitMq.success">
+                  {{ comparisonResult.results.rabbitMq.success ? '✓ Success' : '✗ Failed' }}
+                </td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div *ngIf="!comparisonResult && !isLoading" class="no-data">
+        <mat-icon class="empty-icon">analytics</mat-icon>
+        <p>Click "Run Comparison" to start the performance test</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+

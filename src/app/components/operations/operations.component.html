@@ -1,0 +1,95 @@
+<div class="operations-container">
+  <mat-card *ngIf="authService.hasAnyRole('Worker', 'Admin')">
+    <mat-card-header>
+      <div class="header-content">
+        <mat-icon class="header-icon">build</mat-icon>
+        <mat-card-title>Create Operation</mat-card-title>
+      </div>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="operationForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" rows="3" required></textarea>
+          <mat-error *ngIf="operationForm.get('description')?.hasError('required')">
+            Description is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Order</mat-label>
+          <mat-select formControlName="orderId" required>
+            <mat-option *ngFor="let order of orders" [value]="order.id">
+              #{{ order.id }} - {{ order.description }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="operationForm.get('orderId')?.hasError('required')">
+            Order is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Detail</mat-label>
+          <mat-select formControlName="detailid" required>
+            <mat-option *ngFor="let detail of details" [value]="detail.id">
+              {{ detail.name }} (Qty: {{ detail.quantity }})
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="operationForm.get('detailid')?.hasError('required')">
+            Detail is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width" *ngIf="authService.isAdmin()">
+          <mat-label>Employee</mat-label>
+          <mat-select formControlName="employeeId" required [disabled]="loadingUsers">
+            <mat-option *ngIf="loadingUsers" disabled>
+              <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
+              Loading users...
+            </mat-option>
+            <mat-option *ngFor="let user of users" [value]="user.id">
+              {{ user.username }} ({{ user.email }}) - {{ user.role }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="operationForm.get('employeeId')?.hasError('required')">
+            Employee is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Time Spent (hours)</mat-label>
+          <input matInput type="number" step="0.1" formControlName="timeSpent" required>
+          <mat-error *ngIf="operationForm.get('timeSpent')?.hasError('required')">
+            Time spent is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Start Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="startDateUtc" required>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="operationForm.get('startDateUtc')?.hasError('required')">
+            Start date is required
+          </mat-error>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" [disabled]="isLoading || operationForm.invalid" class="full-width">
+          {{ isLoading ? 'Creating...' : 'Create Operation' }}
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+  
+  <mat-card *ngIf="!authService.hasAnyRole('Worker', 'Admin')">
+    <mat-card-content>
+      <div class="access-denied">
+        <mat-icon>lock</mat-icon>
+        <h2>Access Denied</h2>
+        <p>Only Workers and Administrators can create operations.</p>
+        <p>Please contact your administrator if you need access.</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+

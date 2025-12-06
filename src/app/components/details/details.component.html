@@ -1,0 +1,62 @@
+<div class="details-container">
+  <mat-card *ngIf="authService.hasAnyRole('Admin', 'Worker')">
+    <mat-card-header class="card-header">
+      <mat-card-title>Warehouse Details</mat-card-title>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="openCreateDialog()" 
+        class="create-button"
+        *ngIf="authService.isAdmin()">
+        <mat-icon>add</mat-icon>
+        Add Detail
+      </button>
+    </mat-card-header>
+    <mat-card-content>
+      <div *ngIf="isLoading" class="loading">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Loading details...</p>
+      </div>
+      <table mat-table [dataSource]="details" class="details-table" *ngIf="!isLoading">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let detail">{{ detail.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let detail">{{ detail.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="price">
+          <th mat-header-cell *matHeaderCellDef>Price</th>
+          <td mat-cell *matCellDef="let detail">${{ detail.price | number:'1.2-2' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="quantity">
+          <th mat-header-cell *matHeaderCellDef>Quantity</th>
+          <td mat-cell *matCellDef="let detail">{{ detail.quantity }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <div *ngIf="!isLoading && details.length === 0" class="no-data">
+        <mat-icon class="empty-icon">inventory_2</mat-icon>
+        <p>No details found. Add your first detail!</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  
+  <mat-card *ngIf="!authService.hasAnyRole('Admin', 'Worker')">
+    <mat-card-content>
+      <div class="access-denied">
+        <mat-icon>lock</mat-icon>
+        <h2>Access Denied</h2>
+        <p>Only Administrators and Workers can view warehouse details.</p>
+        <p>Please contact your administrator if you need access.</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
